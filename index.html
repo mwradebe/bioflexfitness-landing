@@ -240,11 +240,11 @@
           <p class="response-note">Johannesburg North • Hybrid & Online Coaching</p>
         </div>
 
-        <form class="lead-form" action="https://formsubmit.co/bioflexfitnesspty@gmail.com" method="POST">
+        <form class="lead-form" id="bioflexLeadForm" action="https://formsubmit.co/ajax/bioflexfitnesspty@gmail.com" method="POST">
           <input type="hidden" name="_subject" value="New BioFlexFitness website lead" />
           <input type="hidden" name="_template" value="table" />
           <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_next" value="https://bioflexfitness-landing.pages.dev/thanks.html" />
+          <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;pointer-events:none" />
           <label>Full name<input type="text" name="name" autocomplete="name" required /></label>
           <label>Email address<input type="email" name="email" autocomplete="email" required /></label>
           <label>WhatsApp number <span>(optional)</span><input type="tel" name="whatsapp" autocomplete="tel" /></label>
@@ -263,7 +263,8 @@
           <label>Your main goal or challenge<textarea name="goal" rows="4" placeholder="Tell us what you want to improve..." required></textarea></label>
           <label class="consent"><input type="checkbox" required /> <span>I agree that BioFlexFitness may use these details to respond to my enquiry. My details will not be sold.</span></label>
           <button class="btn btn-primary form-submit" type="submit">Send My Enquiry</button>
-          <p class="form-note">Your enquiry is sent to the BioFlexFitness business inbox. The first live submission may trigger a one-time email verification for the form service.</p>
+          <div id="formStatus" role="status" aria-live="polite" style="display:none;margin-top:14px;padding:16px;border:1px solid rgba(184,242,74,.28);border-radius:14px;background:rgba(184,242,74,.06)"></div>
+          <p class="form-note">We use your details only to respond to your BioFlexFitness enquiry. For fastest contact, you can continue the conversation on WhatsApp after submitting.</p>
         </form>
       </div>
     </section>
