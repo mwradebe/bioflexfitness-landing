@@ -1,5 +1,8 @@
 document.getElementById('year').textContent = new Date().getFullYear();
 
+const BUSINESS_WHATSAPP = '27671224121';
+const WELLNESS_WHATSAPP = '27815348146';
+
 const toggle = document.querySelector('.menu-toggle');
 const nav = document.querySelector('.nav');
 
@@ -28,6 +31,43 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
+// Route wellness enquiries directly to Nyatshikalanga's WhatsApp.
+const wellnessLink = Array.from(document.querySelectorAll('a.card-link')).find(link =>
+  link.textContent.toLowerCase().includes('wellness support')
+);
+
+if (wellnessLink) {
+  const wellnessMessage = 'Hi Nyatshikalanga, I found BioFlexFitness online and I would like to enquire about Wellness & Psychosocial Support.';
+  wellnessLink.href = `https://wa.me/${WELLNESS_WHATSAPP}?text=${encodeURIComponent(wellnessMessage)}`;
+  wellnessLink.target = '_blank';
+  wellnessLink.rel = 'noopener';
+}
+
+// Add the wellness contact to the footer alongside the main BioFlex contact details.
+const footerContact = Array.from(document.querySelectorAll('.footer-grid > div')).find(section => {
+  const heading = section.querySelector('strong');
+  return heading?.textContent.trim().toLowerCase() === 'contact';
+});
+
+if (footerContact && !document.getElementById('wellnessWhatsappContact')) {
+  const wellnessContact = document.createElement('a');
+  wellnessContact.id = 'wellnessWhatsappContact';
+  wellnessContact.href = `https://wa.me/${WELLNESS_WHATSAPP}?text=${encodeURIComponent('Hi Nyatshikalanga, I am contacting you from the BioFlexFitness website regarding wellness support.')}`;
+  wellnessContact.target = '_blank';
+  wellnessContact.rel = 'noopener';
+  wellnessContact.textContent = 'Wellness WhatsApp: +27 81 534 8146';
+
+  const businessWhatsApp = Array.from(footerContact.querySelectorAll('a')).find(link =>
+    link.textContent.toLowerCase().includes('whatsapp')
+  );
+
+  if (businessWhatsApp) {
+    businessWhatsApp.insertAdjacentElement('afterend', wellnessContact);
+  } else {
+    footerContact.appendChild(wellnessContact);
+  }
+}
+
 const leadForm = document.getElementById('bioflexLeadForm');
 const formStatus = document.getElementById('formStatus');
 
@@ -45,8 +85,14 @@ leadForm?.addEventListener('submit', async (event) => {
   const service = String(formData.get('service') || '').trim();
   const goal = String(formData.get('goal') || '').trim();
 
+  const isWellnessEnquiry = service.toLowerCase().includes('wellness') || service.toLowerCase().includes('psychosocial');
+  const destinationNumber = isWellnessEnquiry ? WELLNESS_WHATSAPP : BUSINESS_WHATSAPP;
+  const greeting = isWellnessEnquiry
+    ? 'Hi Nyatshikalanga, I submitted a wellness enquiry on the BioFlexFitness website.'
+    : 'Hi BioFlexFitness, I submitted an enquiry on the website.';
+
   const whatsappMessage = [
-    'Hi BioFlexFitness, I submitted an enquiry on the website.',
+    greeting,
     '',
     `Name: ${name}`,
     `Email: ${email}`,
@@ -55,7 +101,7 @@ leadForm?.addEventListener('submit', async (event) => {
     `Goal: ${goal}`
   ].filter(Boolean).join('\n');
 
-  const whatsappUrl = `https://wa.me/27671224121?text=${encodeURIComponent(whatsappMessage)}`;
+  const whatsappUrl = `https://wa.me/${destinationNumber}?text=${encodeURIComponent(whatsappMessage)}`;
 
   submitButton.disabled = true;
   submitButton.textContent = 'Sending...';
@@ -80,10 +126,11 @@ leadForm?.addEventListener('submit', async (event) => {
   }
 
   if (formStatus) {
+    const destinationLabel = isWellnessEnquiry ? 'Nyatshikalanga on WhatsApp' : 'BioFlex on WhatsApp';
     formStatus.style.display = 'block';
     formStatus.innerHTML = relayAccepted
-      ? `<strong>Thanks, ${escapeHtml(name)}.</strong><br>Your enquiry was submitted. For the fastest response, send the same details to us on WhatsApp.<br><br><a class="btn btn-primary" href="${whatsappUrl}" target="_blank" rel="noopener">Continue on WhatsApp</a>`
-      : `<strong>Your details are ready.</strong><br>The email relay could not be confirmed, so please send the enquiry directly to BioFlex on WhatsApp. Your details are already filled in for you.<br><br><a class="btn btn-primary" href="${whatsappUrl}" target="_blank" rel="noopener">Send on WhatsApp</a>`;
+      ? `<strong>Thanks, ${escapeHtml(name)}.</strong><br>Your enquiry was submitted. For the fastest response, continue with ${destinationLabel}.<br><br><a class="btn btn-primary" href="${whatsappUrl}" target="_blank" rel="noopener">Continue on WhatsApp</a>`
+      : `<strong>Your details are ready.</strong><br>The email relay could not be confirmed, so please send the enquiry directly to ${destinationLabel}. Your details are already filled in for you.<br><br><a class="btn btn-primary" href="${whatsappUrl}" target="_blank" rel="noopener">Send on WhatsApp</a>`;
     formStatus.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
